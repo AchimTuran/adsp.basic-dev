@@ -230,35 +230,35 @@ AE_DSP_ERROR CallMenuHook(const AE_DSP_MENUHOOK &menuhook, const AE_DSP_MENUHOOK
  * Control function for start and stop of dsp processing.
  */
 
-AE_DSP_ERROR StreamCreate(const AE_DSP_SETTINGS *addonSettings, const AE_DSP_STREAM_PROPERTIES* pProperties)
+AE_DSP_ERROR StreamCreate(const AE_DSP_SETTINGS *addonSettings, const AE_DSP_STREAM_PROPERTIES* pProperties, ADDON_HANDLE handle)
 {
-  return g_DSPProcessor.StreamCreate(addonSettings, pProperties);
+  return g_DSPProcessor.StreamCreate(addonSettings, pProperties, handle);
 }
 
-AE_DSP_ERROR StreamDestroy(AE_DSP_STREAM_ID id)
+AE_DSP_ERROR StreamDestroy(const ADDON_HANDLE handle)
 {
-  return g_DSPProcessor.StreamDestroy(id);
+  return g_DSPProcessor.StreamDestroy(handle->dataIdentifier);
 }
 
-AE_DSP_ERROR StreamInitialize(const AE_DSP_SETTINGS *settings)
+AE_DSP_ERROR StreamInitialize(const ADDON_HANDLE handle, const AE_DSP_SETTINGS *settings)
 {
   AE_DSP_ERROR err = AE_DSP_ERROR_UNKNOWN;
 
-  if (g_usedDSPs[settings->iStreamID])
-    err = g_usedDSPs[settings->iStreamID]->StreamInitialize(settings);
+  if (g_usedDSPs[handle->dataIdentifier])
+    err = g_usedDSPs[handle->dataIdentifier]->StreamInitialize(settings);
 
   return err;
 }
 
-AE_DSP_ERROR StreamIsModeSupported(AE_DSP_STREAM_ID id, AE_DSP_MODE_TYPE type, unsigned int mode_id, int unique_db_mode_id)
+AE_DSP_ERROR StreamIsModeSupported(const ADDON_HANDLE handle, AE_DSP_MODE_TYPE type, unsigned int mode_id, int unique_db_mode_id)
 {
   AE_DSP_ERROR err = AE_DSP_ERROR_UNKNOWN;
 
   if (type == AE_DSP_MODE_TYPE_INPUT_RESAMPLE && mode_id == ID_POST_PROCESS_INPUT_RESAMPLER)
     return AE_DSP_ERROR_NO_ERROR;
 
-  if (g_usedDSPs[id])
-    err = g_usedDSPs[id]->StreamIsModeSupported(type, mode_id, unique_db_mode_id);
+  if (g_usedDSPs[handle->dataIdentifier])
+    err = g_usedDSPs[handle->dataIdentifier]->StreamIsModeSupported(type, mode_id, unique_db_mode_id);
 
   return err;
 }
@@ -268,9 +268,9 @@ AE_DSP_ERROR StreamIsModeSupported(AE_DSP_STREAM_ID id, AE_DSP_MODE_TYPE type, u
  * Input processing related functions
  */
 
-bool InputProcess(AE_DSP_STREAM_ID id, const float **array_in, unsigned int samples)
+bool InputProcess(const ADDON_HANDLE handle, const float **array_in, unsigned int samples)
 {
-  return g_usedDSPs[id]->InputProcess(array_in, samples);
+  return g_usedDSPs[handle->dataIdentifier]->InputProcess(array_in, samples);
 }
 
 
@@ -279,24 +279,24 @@ bool InputProcess(AE_DSP_STREAM_ID id, const float **array_in, unsigned int samp
  * only one dsp addon is allowed to do this
  */
 
-unsigned int InputResampleProcessNeededSamplesize(AE_DSP_STREAM_ID id)
+unsigned int InputResampleProcessNeededSamplesize(const ADDON_HANDLE handle)
 {
-  return g_usedDSPs[id]->InputResampleProcessNeededSamplesize();
+  return g_usedDSPs[handle->dataIdentifier]->InputResampleProcessNeededSamplesize();
 }
 
-int InputResampleSampleRate(AE_DSP_STREAM_ID id)
+int InputResampleSampleRate(const ADDON_HANDLE handle)
 {
-  return g_usedDSPs[id]->InputResampleSampleRate();
+  return g_usedDSPs[handle->dataIdentifier]->InputResampleSampleRate();
 }
 
-float InputResampleGetDelay(AE_DSP_STREAM_ID id)
+float InputResampleGetDelay(const ADDON_HANDLE handle)
 {
-  return g_usedDSPs[id]->InputResampleGetDelay();
+  return g_usedDSPs[handle->dataIdentifier]->InputResampleGetDelay();
 }
 
-unsigned int InputResampleProcess(AE_DSP_STREAM_ID id, float **array_in, float **array_out, unsigned int samples)
+unsigned int InputResampleProcess(const ADDON_HANDLE handle, float **array_in, float **array_out, unsigned int samples)
 {
-  return g_usedDSPs[id]->InputResampleProcess(array_in,  array_out, samples);
+  return g_usedDSPs[handle->dataIdentifier]->InputResampleProcess(array_in,  array_out, samples);
 }
 
 
@@ -305,19 +305,19 @@ unsigned int InputResampleProcess(AE_DSP_STREAM_ID id, float **array_in, float *
  * all enabled addons allowed todo this
  */
 
-unsigned int PreProcessNeededSamplesize(AE_DSP_STREAM_ID id, unsigned int mode_id)
+unsigned int PreProcessNeededSamplesize(const ADDON_HANDLE handle, unsigned int mode_id)
 {
-  return g_usedDSPs[id]->PreProcessNeededSamplesize(mode_id);
+  return g_usedDSPs[handle->dataIdentifier]->PreProcessNeededSamplesize(mode_id);
 }
 
-float PreProcessGetDelay(AE_DSP_STREAM_ID id, unsigned int mode_id)
+float PreProcessGetDelay(const ADDON_HANDLE handle, unsigned int mode_id)
 {
-  return g_usedDSPs[id]->PreProcessGetDelay(mode_id);
+  return g_usedDSPs[handle->dataIdentifier]->PreProcessGetDelay(mode_id);
 }
 
-unsigned int PreProcess(AE_DSP_STREAM_ID id, unsigned int mode_id, float **array_in, float **array_out, unsigned int samples)
+unsigned int PreProcess(const ADDON_HANDLE handle, unsigned int mode_id, float **array_in, float **array_out, unsigned int samples)
 {
-  return g_usedDSPs[id]->PreProcess(mode_id, array_in,  array_out, samples);
+  return g_usedDSPs[handle->dataIdentifier]->PreProcess(mode_id, array_in,  array_out, samples);
 }
 
 /*!
@@ -325,34 +325,34 @@ unsigned int PreProcess(AE_DSP_STREAM_ID id, unsigned int mode_id, float **array
  * only one during playback selectable dsp addon is allowed to do this
  */
 
-AE_DSP_ERROR MasterProcessSetMode(AE_DSP_STREAM_ID id, AE_DSP_STREAMTYPE type, unsigned int client_mode_id, int unique_db_mode_id)
+AE_DSP_ERROR MasterProcessSetMode(const ADDON_HANDLE handle, AE_DSP_STREAMTYPE type, unsigned int client_mode_id, int unique_db_mode_id)
 {
-  return g_usedDSPs[id]->MasterProcessSetMode(type, client_mode_id, unique_db_mode_id);
+  return g_usedDSPs[handle->dataIdentifier]->MasterProcessSetMode(type, client_mode_id, unique_db_mode_id);
 }
 
-unsigned int MasterProcessNeededSamplesize(AE_DSP_STREAM_ID id)
+unsigned int MasterProcessNeededSamplesize(const ADDON_HANDLE handle)
 {
-  return g_usedDSPs[id]->MasterProcessNeededSamplesize();
+  return g_usedDSPs[handle->dataIdentifier]->MasterProcessNeededSamplesize();
 }
 
-float MasterProcessGetDelay(AE_DSP_STREAM_ID id)
+float MasterProcessGetDelay(const ADDON_HANDLE handle)
 {
-  return g_usedDSPs[id]->MasterProcessGetDelay();
+  return g_usedDSPs[handle->dataIdentifier]->MasterProcessGetDelay();
 }
 
-unsigned int MasterProcess(AE_DSP_STREAM_ID id, float **array_in, float **array_out, unsigned int samples)
+unsigned int MasterProcess(const ADDON_HANDLE handle, float **array_in, float **array_out, unsigned int samples)
 {
-  return g_usedDSPs[id]->MasterProcess(array_in, array_out, samples);
+  return g_usedDSPs[handle->dataIdentifier]->MasterProcess(array_in, array_out, samples);
 }
 
-int MasterProcessGetOutChannels(AE_DSP_STREAM_ID id, unsigned long &out_channel_present_flags)
+int MasterProcessGetOutChannels(const ADDON_HANDLE handle, unsigned long &out_channel_present_flags)
 {
-  return g_usedDSPs[id]->MasterProcessGetOutChannels(out_channel_present_flags);
+  return g_usedDSPs[handle->dataIdentifier]->MasterProcessGetOutChannels(out_channel_present_flags);
 }
 
-const char *MasterProcessGetStreamInfoString(AE_DSP_STREAM_ID id)
+const char *MasterProcessGetStreamInfoString(const ADDON_HANDLE handle)
 {
-  return g_usedDSPs[id]->MasterProcessGetStreamInfoString();
+  return g_usedDSPs[handle->dataIdentifier]->MasterProcessGetStreamInfoString();
 }
 
 
@@ -361,19 +361,19 @@ const char *MasterProcessGetStreamInfoString(AE_DSP_STREAM_ID id)
  * all enabled addons allowed todo this
  */
 
-unsigned int PostProcessNeededSamplesize(AE_DSP_STREAM_ID id, unsigned int mode_id)
+unsigned int PostProcessNeededSamplesize(const ADDON_HANDLE handle, unsigned int mode_id)
 {
-  return g_usedDSPs[id]->PostProcessNeededSamplesize(mode_id);
+  return g_usedDSPs[handle->dataIdentifier]->PostProcessNeededSamplesize(mode_id);
 }
 
-float PostProcessGetDelay(AE_DSP_STREAM_ID id, unsigned int mode_id)
+float PostProcessGetDelay(const ADDON_HANDLE handle, unsigned int mode_id)
 {
-  return g_usedDSPs[id]->PostProcessGetDelay(mode_id);
+  return g_usedDSPs[handle->dataIdentifier]->PostProcessGetDelay(mode_id);
 }
 
-unsigned int PostProcess(AE_DSP_STREAM_ID id, unsigned int mode_id, float **array_in, float **array_out, unsigned int samples)
+unsigned int PostProcess(const ADDON_HANDLE handle, unsigned int mode_id, float **array_in, float **array_out, unsigned int samples)
 {
-  return g_usedDSPs[id]->PostProcess(mode_id, array_in, array_out, samples);
+  return g_usedDSPs[handle->dataIdentifier]->PostProcess(mode_id, array_in, array_out, samples);
 }
 
 
@@ -382,24 +382,24 @@ unsigned int PostProcess(AE_DSP_STREAM_ID id, unsigned int mode_id, float **arra
  * only one dsp addon is allowed to do this
  */
 
-unsigned int OutputResampleProcessNeededSamplesize(AE_DSP_STREAM_ID id)
+unsigned int OutputResampleProcessNeededSamplesize(const ADDON_HANDLE handle)
 {
-  return g_usedDSPs[id]->OutputResampleProcessNeededSamplesize();
+  return g_usedDSPs[handle->dataIdentifier]->OutputResampleProcessNeededSamplesize();
 }
 
-int OutputResampleSampleRate(AE_DSP_STREAM_ID id)
+int OutputResampleSampleRate(const ADDON_HANDLE handle)
 {
-  return g_usedDSPs[id]->OutputResampleSampleRate();
+  return g_usedDSPs[handle->dataIdentifier]->OutputResampleSampleRate();
 }
 
-float OutputResampleGetDelay(AE_DSP_STREAM_ID id)
+float OutputResampleGetDelay(const ADDON_HANDLE handle)
 {
-  return g_usedDSPs[id]->OutputResampleGetDelay();
+  return g_usedDSPs[handle->dataIdentifier]->OutputResampleGetDelay();
 }
 
-unsigned int OutputResampleProcess(AE_DSP_STREAM_ID id, float **array_in, float **array_out, unsigned int samples)
+unsigned int OutputResampleProcess(const ADDON_HANDLE handle, float **array_in, float **array_out, unsigned int samples)
 {
-  return g_usedDSPs[id]->OutputResampleProcess(array_in,  array_out, samples);
+  return g_usedDSPs[handle->dataIdentifier]->OutputResampleProcess(array_in,  array_out, samples);
 }
 
 }

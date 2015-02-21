@@ -901,7 +901,7 @@ void cDSPProcessor::DestroyDSP()
 
 }
 
-AE_DSP_ERROR cDSPProcessor::StreamCreate(const AE_DSP_SETTINGS *addonSettings, const AE_DSP_STREAM_PROPERTIES* pProperties)
+AE_DSP_ERROR cDSPProcessor::StreamCreate(const AE_DSP_SETTINGS *addonSettings, const AE_DSP_STREAM_PROPERTIES* pProperties, ADDON_HANDLE handle)
 {
   if (g_usedDSPs[addonSettings->iStreamID])
   {
@@ -912,7 +912,11 @@ AE_DSP_ERROR cDSPProcessor::StreamCreate(const AE_DSP_SETTINGS *addonSettings, c
   cDSPProcessorStream *proc = new cDSPProcessorStream(addonSettings->iStreamID);
   AE_DSP_ERROR err = proc->StreamCreate(addonSettings, pProperties);
   if (err == AE_DSP_ERROR_NO_ERROR)
+  {
     g_usedDSPs[addonSettings->iStreamID] = proc;
+    handle->dataIdentifier = addonSettings->iStreamID;
+    handle->callerAddress = proc;
+  }
   else
     delete proc;
 

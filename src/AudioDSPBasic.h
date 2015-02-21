@@ -193,7 +193,7 @@ public:
   void DestroyDSP();
   ADDON_STATUS SetSetting(const char *settingName, const void *settingValue);
   AE_DSP_ERROR CallMenuHook(const AE_DSP_MENUHOOK &menuhook, const AE_DSP_MENUHOOK_DATA &item);
-  AE_DSP_ERROR StreamCreate(const AE_DSP_SETTINGS *addonSettings, const AE_DSP_STREAM_PROPERTIES* pProperties);
+  AE_DSP_ERROR StreamCreate(const AE_DSP_SETTINGS *addonSettings, const AE_DSP_STREAM_PROPERTIES* pProperties, ADDON_HANDLE handle);
   AE_DSP_ERROR StreamDestroy(unsigned int id);
   void SetOutputGain(AE_DSP_CHANNEL channel, float GainCoeff);
   void SetDelay(AE_DSP_CHANNEL channel, unsigned int delay);
