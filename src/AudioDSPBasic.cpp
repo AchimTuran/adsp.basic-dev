@@ -22,8 +22,8 @@
 #include <vector>
 
 #include "kodi/libXBMC_addon.h"
-#include "kodi/libXBMC_adsp.h"
-#include "kodi/libXBMC_gui.h"
+#include "kodi/libKODI_adsp.h"
+#include "kodi/libKODI_guilib.h"
 
 #include "client.h"
 #include "kodi/util/XMLUtils.h"
@@ -155,7 +155,7 @@ AE_DSP_ERROR cDSPProcessorStream::StreamCreate(const AE_DSP_SETTINGS *settings, 
       {
         if ((m_InputResampleStates[i] = src_new(SRC_SINC_MEDIUM_QUALITY, 1, &error)) == NULL)
         {
-          XBMC->Log(LOG_ERROR, "Couldn't create resampling converter on channel index %i, resampling disabled!", i);
+          KODI->Log(LOG_ERROR, "Couldn't create resampling converter on channel index %i, resampling disabled!", i);
           return AE_DSP_ERROR_UNKNOWN;
         }
       }
@@ -173,7 +173,7 @@ AE_DSP_ERROR cDSPProcessorStream::StreamCreate(const AE_DSP_SETTINGS *settings, 
       {
         if ((m_OutputResampleStates[i] = src_new(SRC_SINC_MEDIUM_QUALITY, 1, &error)) == NULL)
         {
-          XBMC->Log(LOG_ERROR, "Couldn't create resampling converter on channel index %i, resampling disabled!", i);
+          KODI->Log(LOG_ERROR, "Couldn't create resampling converter on channel index %i, resampling disabled!", i);
           return AE_DSP_ERROR_UNKNOWN;
         }
       }
@@ -247,7 +247,7 @@ AE_DSP_ERROR cDSPProcessorStream::StreamInitialize(const AE_DSP_SETTINGS *settin
   if (m_UseInputResample)
   {
     m_ProcessSourceRatio = (1.0 * settings->iOutSamplerate) / settings->iInSamplerate;
-    XBMC->Log(LOG_INFO, "Using input stream resample ratio of %f", m_ProcessSourceRatio);
+    KODI->Log(LOG_INFO, "Using input stream resample ratio of %f", m_ProcessSourceRatio);
 
     for (int i = 0; i < AE_DSP_CH_MAX; i++)
     {
@@ -255,7 +255,7 @@ AE_DSP_ERROR cDSPProcessorStream::StreamInitialize(const AE_DSP_SETTINGS *settin
       {
         if (src_set_ratio(m_InputResampleStates[i], m_ProcessSourceRatio))
         {
-          XBMC->Log(LOG_ERROR, "Couldn't set sample rate from %i to %i on channel index %i, resampling disabled!", i, settings->iInSamplerate, settings->iOutSamplerate);
+          KODI->Log(LOG_ERROR, "Couldn't set sample rate from %i to %i on channel index %i, resampling disabled!", i, settings->iInSamplerate, settings->iOutSamplerate);
           return AE_DSP_ERROR_UNKNOWN;
         }
       }
@@ -265,7 +265,7 @@ AE_DSP_ERROR cDSPProcessorStream::StreamInitialize(const AE_DSP_SETTINGS *settin
   if (m_UseOutputResample)
   {
     m_OutputSourceRatio = (1.0 * settings->iOutSamplerate) / settings->iInSamplerate;
-    XBMC->Log(LOG_INFO, "Using resample ratio of %f", m_OutputSourceRatio);
+    KODI->Log(LOG_INFO, "Using resample ratio of %f", m_OutputSourceRatio);
 
     for (int i = 0; i < AE_DSP_CH_MAX; i++)
     {
@@ -273,7 +273,7 @@ AE_DSP_ERROR cDSPProcessorStream::StreamInitialize(const AE_DSP_SETTINGS *settin
       {
         if (src_set_ratio(m_OutputResampleStates[i], m_OutputSourceRatio))
         {
-          XBMC->Log(LOG_ERROR, "Couldn't set sample rate from %i to %i on channel index %i, resampling disabled!", i, settings->iInSamplerate, settings->iOutSamplerate);
+          KODI->Log(LOG_ERROR, "Couldn't set sample rate from %i to %i on channel index %i, resampling disabled!", i, settings->iInSamplerate, settings->iOutSamplerate);
           return AE_DSP_ERROR_UNKNOWN;
         }
       }
@@ -423,7 +423,7 @@ unsigned int cDSPProcessorStream::InputResampleProcess(float **array_in, float *
 
       if ((error = src_process(m_InputResampleStates[i], &src_data)))
       {
-        XBMC->Log(LOG_ERROR, "Resample process on index %i with %s failed", i, src_strerror(error)) ;
+        KODI->Log(LOG_ERROR, "Resample process on index %i with %s failed", i, src_strerror(error)) ;
         m_ResampleFaults++;
         return 0;
       }
@@ -479,11 +479,11 @@ AE_DSP_ERROR cDSPProcessorStream::MasterProcessSetMode(AE_DSP_STREAMTYPE type, u
 
   if (m_MasterCurrrentMode == NULL)
   {
-    XBMC->Log(LOG_ERROR, "Requested client id '%i' not present on current processor", mode_id);
+    KODI->Log(LOG_ERROR, "Requested client id '%i' not present on current processor", mode_id);
     return AE_DSP_ERROR_UNKNOWN;
   }
 
-  XBMC->Log(LOG_INFO, "Master processing set mode to '%s' with id '%i'", m_MasterCurrrentMode->GetName(), mode_id);
+  KODI->Log(LOG_INFO, "Master processing set mode to '%s' with id '%i'", m_MasterCurrrentMode->GetName(), mode_id);
   return AE_DSP_ERROR_NO_ERROR;
 }
 
@@ -823,10 +823,10 @@ bool cDSPProcessor::InitDSP()
   AE_DSP_MENUHOOK hook;
 
   /* Read setting "speaker_correction" from settings.xml */
-  if (!XBMC->GetSetting("speaker_correction", &m_SpeakerCorrection))
+  if (!KODI->GetSetting("speaker_correction", &m_SpeakerCorrection))
   {
     /* If setting is unknown fallback to defaults */
-    XBMC->Log(LOG_ERROR, "Couldn't get 'speaker_correction' setting, falling back to 'true' as default");
+    KODI->Log(LOG_ERROR, "Couldn't get 'speaker_correction' setting, falling back to 'true' as default");
     m_SpeakerCorrection = true;
   }
   if (m_SpeakerCorrection)
@@ -848,10 +848,10 @@ bool cDSPProcessor::InitDSP()
 
   /* Read setting "master_stereo" from settings.xml */
   bool enable = false;
-  if (!XBMC->GetSetting("master_stereo", &enable))
+  if (!KODI->GetSetting("master_stereo", &enable))
   {
     /* If setting is unknown fallback to defaults */
-    XBMC->Log(LOG_ERROR, "Couldn't get 'master_stereo' setting, falling back to 'true' as default");
+    KODI->Log(LOG_ERROR, "Couldn't get 'master_stereo' setting, falling back to 'true' as default");
     enable = true;
   }
   EnableMasterProcessor(ID_MASTER_PROCESS_STEREO_DOWNMIX, enable);
@@ -957,7 +957,7 @@ bool cDSPProcessor::EnableMasterProcessor(unsigned int masterId, bool enable)
     }
     else
     {
-      XBMC->Log(LOG_ERROR, "Couldn't find master mode id '%i'", masterId);
+      KODI->Log(LOG_ERROR, "Couldn't find master mode id '%i'", masterId);
       return false;
     }
   }
@@ -1002,12 +1002,12 @@ ADDON_STATUS cDSPProcessor::SetSetting(const char *settingName, const void *sett
     else if (!m_SpeakerCorrection && * (bool *) settingValue)
       ADSP->AddMenuHook(&hook);
 
-    XBMC->Log(LOG_INFO, "Changed Setting 'speaker_correction' from %u to %u", m_SpeakerCorrection, * (bool *) settingValue);
+    KODI->Log(LOG_INFO, "Changed Setting 'speaker_correction' from %u to %u", m_SpeakerCorrection, * (bool *) settingValue);
     m_SpeakerCorrection = * (bool *) settingValue;
   }
   else if (str == "master_stereo")
   {
-    XBMC->Log(LOG_INFO, "Changed Setting 'master_stereo' from %u to %u", IsMasterProcessorEnabled(ID_MASTER_PROCESS_STEREO_DOWNMIX), * (bool *) settingValue);
+    KODI->Log(LOG_INFO, "Changed Setting 'master_stereo' from %u to %u", IsMasterProcessorEnabled(ID_MASTER_PROCESS_STEREO_DOWNMIX), * (bool *) settingValue);
     EnableMasterProcessor(ID_MASTER_PROCESS_STEREO_DOWNMIX, * (bool *) settingValue);
   }
 

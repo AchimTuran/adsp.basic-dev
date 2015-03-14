@@ -15,7 +15,7 @@
     library_wingl="adsp.basic.dll"
     library_windx="adsp.basic.dll"
     library_android="libadsp.basic.so" />
-  <extension point="xbmc.addon.metadata">
+  <extension point="kodi.addon.metadata">
     <summary lang="en">Basic Audio DSP Processor</summary>
     <description lang="en">Basic Audio DSP Processor</description>
     <disclaimer lang="en">Just contains stubs</disclaimer>

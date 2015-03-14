@@ -1,8 +1,8 @@
-# XBMC Media Center language file
+# KODI Media Center language file
 # Addon Name: Basic ADSP Addon
 # Addon id: adsp.basic
 # Addon version: 0.0.1
-# Addon Provider: Alwin Esch, Team XBMC
+# Addon Provider: Alwin Esch, Team KODI
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main\n"

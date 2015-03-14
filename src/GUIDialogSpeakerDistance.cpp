@@ -20,8 +20,8 @@
  */
 
 #include "kodi/libXBMC_addon.h"
-#include "kodi/libXBMC_adsp.h"
-#include "kodi/libXBMC_gui.h"
+#include "kodi/libKODI_adsp.h"
+#include "kodi/libKODI_guilib.h"
 
 #include "kodi/util/XMLUtils.h"
 #include "kodi/util/util.h"
@@ -175,12 +175,12 @@ bool CGUIDialogSpeakerDistance::OnInit()
 
   m_spinSpeakerDistanceUnit = GUI->Control_getSpin(m_window, SPIN_CONTROL_SPEAKER_DISTANCE_UNIT);
   m_spinSpeakerDistanceUnit->Clear();
-  m_spinSpeakerDistanceUnit->AddLabel(XBMC->GetLocalizedString(30066), DELAY_UNIT_METER);
-  m_spinSpeakerDistanceUnit->AddLabel(XBMC->GetLocalizedString(30067), DELAY_UNIT_MILLIMETER);
-  m_spinSpeakerDistanceUnit->AddLabel(XBMC->GetLocalizedString(30068), DELAY_UNIT_FEET);
-  m_spinSpeakerDistanceUnit->AddLabel(XBMC->GetLocalizedString(30069), DELAY_UNIT_INCHES);
-  m_spinSpeakerDistanceUnit->AddLabel(XBMC->GetLocalizedString(30070), DELAY_UNIT_SECONDS);
-  m_spinSpeakerDistanceUnit->AddLabel(XBMC->GetLocalizedString(30071), DELAY_UNIT_MILLISECONDS);
+  m_spinSpeakerDistanceUnit->AddLabel(KODI->GetLocalizedString(30066), DELAY_UNIT_METER);
+  m_spinSpeakerDistanceUnit->AddLabel(KODI->GetLocalizedString(30067), DELAY_UNIT_MILLIMETER);
+  m_spinSpeakerDistanceUnit->AddLabel(KODI->GetLocalizedString(30068), DELAY_UNIT_FEET);
+  m_spinSpeakerDistanceUnit->AddLabel(KODI->GetLocalizedString(30069), DELAY_UNIT_INCHES);
+  m_spinSpeakerDistanceUnit->AddLabel(KODI->GetLocalizedString(30070), DELAY_UNIT_SECONDS);
+  m_spinSpeakerDistanceUnit->AddLabel(KODI->GetLocalizedString(30071), DELAY_UNIT_MILLISECONDS);
 
   m_window->SetControlLabel(SPIN_CONTROL_SPEAKER_DISTANCE_UNIT_INFO, "");
 
@@ -269,8 +269,8 @@ void CGUIDialogSpeakerDistance::SetInfoLabel(AE_DSP_CHANNEL channelId)
 {
   int value = m_Settings.m_channels[channelId].ptrSpinControl->GetValue();
   CStdString str;
-  str  = XBMC->GetLocalizedString(TranslateChannelIdToStringId(channelId));
-  str += XBMC->GetLocalizedString(30074);
+  str  = KODI->GetLocalizedString(TranslateChannelIdToStringId(channelId));
+  str += KODI->GetLocalizedString(30074);
   str += " " + GetDistanceLabel(DELAY_UNIT_METER, value) + ",";
   str += " " + GetDistanceLabel(DELAY_UNIT_FEET, value) + ",";
   str += " " + GetDistanceLabel(DELAY_UNIT_INCHES, value) + ",";

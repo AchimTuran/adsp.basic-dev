@@ -24,7 +24,7 @@
 #include <map>
 #include <samplerate.h>
 
-#include "kodi/xbmc_adsp_types.h"
+#include "kodi/kodi_adsp_types.h"
 
 #include "kodi/threads/threads.h"
 #include "kodi/threads/mutex.h"
@@ -128,7 +128,7 @@ public:
 
 private:
   const unsigned int        m_StreamID;           /*!< @brief (required) unique id of the audio stream packets */
-  AE_DSP_SETTINGS           m_Settings;           /*!< @brief (required) the active XBMC audio settings */
+  AE_DSP_SETTINGS           m_Settings;           /*!< @brief (required) the active KODI audio settings */
   AE_DSP_STREAM_PROPERTIES  m_Properties;
   int                       m_iStreamType;
   int                       m_iBaseType;

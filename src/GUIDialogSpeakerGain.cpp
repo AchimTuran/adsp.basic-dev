@@ -20,8 +20,8 @@
  */
 
 #include "kodi/libXBMC_addon.h"
-#include "kodi/libXBMC_adsp.h"
-#include "kodi/libXBMC_gui.h"
+#include "kodi/libKODI_adsp.h"
+#include "kodi/libKODI_guilib.h"
 
 #include "kodi/util/XMLUtils.h"
 #include "kodi/util/util.h"
@@ -88,7 +88,7 @@ bool CGUIDialogSpeakerGain::OnActionCB(GUIHANDLE cbhdl, int actionId)
 
 void CGUIDialogSpeakerGain::ContinuesTestSwitchInfoCB(AE_DSP_CHANNEL channel)
 {
-  m_window->SetControlLabel(SPIN_CONTROL_SPEAKER_CONTINUES_TEST_POS, XBMC->GetLocalizedString(TranslateChannelIdToStringId(channel)));
+  m_window->SetControlLabel(SPIN_CONTROL_SPEAKER_CONTINUES_TEST_POS, KODI->GetLocalizedString(TranslateChannelIdToStringId(channel)));
 }
 
 bool CGUIDialogSpeakerGain::Show()
@@ -161,14 +161,14 @@ bool CGUIDialogSpeakerGain::OnInit()
 
   m_spinSpeakerGainTest = GUI->Control_getSpin(m_window, SPIN_CONTROL_SPEAKER_GAIN_TEST);
   m_spinSpeakerGainTest->Clear();
-  m_spinSpeakerGainTest->AddLabel(XBMC->GetLocalizedString(30049), SOUND_TEST_OFF);
-  m_spinSpeakerGainTest->AddLabel(XBMC->GetLocalizedString(30050), SOUND_TEST_PINK_NOICE);
-  m_spinSpeakerGainTest->AddLabel(XBMC->GetLocalizedString(30051), SOUND_TEST_VOICE);
+  m_spinSpeakerGainTest->AddLabel(KODI->GetLocalizedString(30049), SOUND_TEST_OFF);
+  m_spinSpeakerGainTest->AddLabel(KODI->GetLocalizedString(30050), SOUND_TEST_PINK_NOICE);
+  m_spinSpeakerGainTest->AddLabel(KODI->GetLocalizedString(30051), SOUND_TEST_VOICE);
 
   m_radioSpeakerContinuesTest = GUI->Control_getRadioButton(m_window, SPIN_CONTROL_SPEAKER_CONTINUES_TEST);
   m_radioSpeakerContinuesTest->SetSelected(false);
   m_radioSpeakerContinuesTest->SetVisible(false);
-  m_radioSpeakerContinuesTest->SetText(XBMC->GetLocalizedString(30065));
+  m_radioSpeakerContinuesTest->SetText(KODI->GetLocalizedString(30065));
 
   m_window->SetControlLabel(SPIN_CONTROL_SPEAKER_CONTINUES_TEST_POS, "");
 
